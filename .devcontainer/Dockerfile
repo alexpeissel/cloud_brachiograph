@@ -1,5 +1,6 @@
 # See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.134.1/containers/python-3/.devcontainer/base.Dockerfile
 ARG VARIANT="3"
+
 FROM mcr.microsoft.com/vscode/devcontainers/python:0-${VARIANT}
 
 ENV TERRAFORM_VERSION=0.13.2
@@ -9,6 +10,16 @@ ENV CLOUD_SDK_VERSION=309.0.0
 # COPY requirements.txt /tmp/pip-tmp/
 # RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
 #    && rm -rf /tmp/pip-tmp
+
+# Docker
+ARG SOURCE_SOCKET=/var/run/docker-host.sock
+ARG TARGET_SOCKET=/var/run/docker.sock
+
+COPY .devcontainer/library-scripts/*.sh /tmp/library-scripts/
+
+RUN /bin/bash /tmp/library-scripts/docker-debian.sh && \
+    ls -ltr /tmp/library-scripts/ && \
+    rm -rf /tmp/library-scripts/
 
 # Generic packages
 RUN apt-get update && \
