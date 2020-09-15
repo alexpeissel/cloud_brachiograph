@@ -46,15 +46,19 @@ def generate_vector_json(data):
     print(f'Image {file_name} was downloaded to {temp_local_filename}.')
 
     # Convert the image.
-    lines = vectorise(temp_local_filename)
+    lines = vectorise(temp_local_filename, draw_contours=2, draw_hatch=16)
     print(f'Image {file_name} was processed.')
 
     # Save outputs to files.
     with open(temp_local_output_filename, "w") as file_to_save:
         json.dump(lines, file_to_save, indent=4)
+    json_size = os.path.getsize(temp_local_output_filename)
+    print(f'JSON written to {temp_local_output_filename}, {json_size} bytes.')
 
     with open(temp_local_svg_filename, "w") as file_to_save:
-        makesvg(lines)
+        file_to_save.write(makesvg(lines))
+    svg_size = os.path.getsize(temp_local_svg_filename)
+    print(f'SVG written to {temp_local_svg_filename}, {svg_size} bytes.')
 
     # Write to bucket
     processed_image_bucket_name = os.getenv('PROCESSED_IMAGE_BUCKET_NAME')
@@ -85,6 +89,7 @@ def makesvg(lines):
     for l in lines:
         l = ",".join([str(p[0]*0.5)+","+str(p[1]*0.5) for p in l])
         out += '<polyline points="'+l+'" stroke="black" stroke-width="1" fill="none" />\n'
+
     out += '</svg>'
     return out
 
@@ -113,6 +118,8 @@ def vectorise(
         except:
             pass
     w, h = image.size
+
+    print(f'Image is {w} x {h}')
 
     # convert the image to greyscale
     image = image.convert("L")
