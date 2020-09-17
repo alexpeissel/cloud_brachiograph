@@ -91,7 +91,7 @@
         function check_session_cookie() {
             var session = getCookie("session_uuid");
             if (session != "") {
-                alert("Welcome again " + session);
+                console.log("Welcome again " + session);
             } else {
                 setCookie("session_uuid", session, 0);
             }
@@ -119,7 +119,7 @@
         async function generateSignedURL() {
             file = getFilename();
             // TODO Remove hardcoded function name in URL
-            const response = await fetch('/frontend_test/get_signed_url?filename=' + file)
+            const response = await fetch(window.location.pathname + '/get_signed_url?filename=' + file)
             if (!response.ok) {
                 throw new Error('Network response for fetch was not ok.');
             }
